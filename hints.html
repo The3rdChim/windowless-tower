@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>창문 없는 탑 힌트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a calm station manual — never spoils more than the reader opens
+   IDEA: the maintenance logbook kept beside the tower: sealed hint tabs you break one at a time
+   PICTURE: a top-down floor plan of the tower with numbered markers, and the star-lock diagram
+   COLOUR and TYPE: the game's night palette in both themes — graphite, pale ink, instrument cyan #9ad6e6, warm exit amber; Noto Sans KR
+   LAYOUT: one reading column up to 760px; plan beside its legend on wide screens, stacked on phones */
+:root{color-scheme:dark;--bg:#0a0d11;--card:#121820;--ink:#e6edf2;--dim:#9aa8b4;--cyan:#9ad6e6;--line:rgba(154,214,230,.22);--amber:#ffd58a;--red:#ef7a6a}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#0a0d11}}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.7 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
+main{max-width:760px;margin:0 auto;padding:clamp(28px,5vw,56px) 16px 80px}
+h1{font-size:clamp(32px,6vw,44px);line-height:1.08;margin:0 0 10px;text-wrap:balance}
+h2{font-size:22px;line-height:1.25;margin:48px 0 8px;color:var(--cyan)}
+h3{font-size:17px;margin:0 0 4px}
+p{margin:8px 0}
+.lede{color:var(--dim);margin-bottom:18px}
+.warn{border:1px solid rgba(255,213,138,.35);background:rgba(255,213,138,.06);border-radius:10px;padding:12px 16px;color:var(--amber)}
+nav.scroll{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;margin-top:18px;border-top:1px solid var(--line)}
+nav.scroll a{flex:none;color:var(--ink);text-decoration:none;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:999px}
+nav.scroll a:hover,nav.scroll a:focus-visible{border-color:var(--cyan);outline:none}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:14px}
+.stage .where{color:var(--dim);font-size:14px;margin:0 0 10px}
+details{border-top:1px solid var(--line)}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;min-height:44px;font-weight:500}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:9px;height:9px;border-right:2px solid var(--cyan);border-bottom:2px solid var(--cyan);transform:rotate(-45deg);transition:transform .2s;flex:none;margin-left:2px}
+details[open]>summary::before{transform:rotate(45deg)}
+summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
+details>div{padding:0 0 14px 21px}
+details.ans>summary{color:var(--amber)}
+.big{font-size:26px;font-weight:700;letter-spacing:.06em;color:var(--amber)}
+.mono{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.calc{background:#0c1117;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;overflow-x:auto;white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-size:14.5px;line-height:1.9}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:10px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--dim);font-weight:500}
+td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.planwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.fig{position:relative;aspect-ratio:1}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+ol.legend{margin:0;padding-left:0;list-style:none;font-size:14.5px;display:grid;gap:4px}
+ol.legend li{display:grid;grid-template-columns:26px 1fr;gap:6px}
+ol.legend b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:#0a0d11;font-size:12px}
+ol.legend span small{color:var(--dim)}
+.star{display:block;width:min(220px,60vw);margin:10px 0}
+.teacher{margin-top:56px;padding-top:8px;border-top:2px solid var(--line)}
+footer{margin-top:40px;color:var(--dim);font-size:14px}
+@media (max-width:600px){.planwrap{grid-template-columns:1fr}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{border:0;padding:2px 0;padding-inline-start:7em;position:relative}.stack td::before{content:attr(data-l);position:absolute;left:0;width:6.5em;color:var(--dim)}.stack td.n{text-align:left}}
+@media (prefers-reduced-motion:reduce){summary::before{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>창문 없는 탑 — 막혔을 때 여는 쪽지</h1>
+  <p class="lede">단계마다 힌트가 봉해져 있습니다. 막힌 단계의 <b>힌트 1</b>부터 하나씩 여세요. 정답은 마지막에 있습니다.</p>
+  <p class="warn">직접 재서 알아내는 게 이 방의 전부입니다. 정답 칸은 정말 다른 방법이 없을 때만 여세요.</p>
+  <nav class="scroll" aria-label="단계로 이동">
+    <a href="#map">지도</a><a href="#pins">1층 핀</a><a href="#look">2층 숫자</a><a href="#door">3층 문</a><a href="#box">상자</a><a href="#build">진자 만들기</a><a href="#length">진자 길이</a><a href="#lat">위도</a><a href="#teacher">채점용 요약</a>
+  </nav>
+
+  <h2 id="map">탑 지도</h2>
+  <div class="stage">
+    <p class="where">각도는 1층 바닥 원판의 눈금과 같습니다 (0° = 출구 문 쪽, 시계 방향으로 커짐).</p>
+    <details><summary>지도 펼치기 (물건 위치가 드러납니다)</summary><div>
+      <div class="planwrap">
+        <div class="fig"><svg id="plan" viewBox="0 0 400 400" role="img" aria-label="탑을 위에서 본 평면도와 번호 표시"></svg></div>
+        <ol class="legend" id="legend"></ol>
+      </div>
+    </div></details>
+  </div>
+
+  <h2 id="pins">1층 — 핀</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 2층으로 가는 철창의 글자 자물쇠 (다섯 칸)</p>
+    <details><summary>힌트 1</summary><div><p>침대 옆 통에 핀이 들어 있습니다. 핀을 골라 보면 <b>밑면의 그림</b>이 보입니다. 바닥 원판 둘레의 홈마다 옆에 그림이 하나씩 그려져 있습니다.</p></div></details>
+    <details><summary>힌트 2</summary><div><p>그림이 같은 홈에 핀을 꽂으세요. 다 꽂았으면 <b>0°에서 시작해 각도가 커지는 쪽으로</b> 한 바퀴 돌며 핀 머리의 글자를 읽습니다. 같은 다섯 글자가 두 번 나옵니다.</p></div></details>
+    <details class="ans"><summary>정답</summary><div><p class="big mono">STILL</p><p>0°·10°·20°·30°·40°와 180°·190°·200°·210°·220° 홈에 S T I L L이 두 번. ‘가만히’라는 뜻입니다.</p></div></details>
+  </div>
+
+  <h2 id="look">2층 — 내려다보기</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 3층으로 가는 철창의 숫자 자물쇠 (네 칸)</p>
+    <details><summary>힌트 1</summary><div><p>2층 발코니는 바닥의 금속 띠로 네 구역으로 나뉘고, 구역마다 벽에 큰 번호(1~4)가 있습니다. 각 구역 한가운데 난간 앞에 <b>작은 금속 고리</b>가 바닥에 박혀 있습니다.</p></div></details>
+    <details><summary>힌트 2</summary><div><p>그 고리 위에 서서 1층 바닥 원판을 내려다보면, 늘어진 무늬 하나가 <b>똑바로 선 숫자</b>로 보입니다. 다른 자리에서 보면 누워 있거나 뒤집혀 있으니 조심하세요 (6과 9가 헷갈립니다). 벽 번호 1 → 2 → 3 → 4 순서로 읽습니다.</p></div></details>
+    <details class="ans"><summary>정답</summary><div><p class="big mono">4726</p>
+      <table><thead><tr><th>벽 번호</th><th>구역</th><th>보이는 숫자</th></tr></thead>
+      <tbody><tr><td>1</td><td>동 (90°)</td><td>4</td></tr><tr><td>2</td><td>서 (270°)</td><td>7</td></tr><tr><td>3</td><td>북 (0°)</td><td>2</td></tr><tr><td>4</td><td>남 (180°)</td><td>6</td></tr></tbody></table></div></details>
+  </div>
+
+  <h2 id="door">3층 — 출구 문</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 출구 문 옆의 빛점 자물쇠 (4×4 점을 이어 그리기)</p>
+    <details><summary>힌트 1</summary><div><p>3층 벽에 <b>창문처럼 생긴 액자</b>가 있습니다. 그림 속 별 가운데 유난히 밝은 별 여섯 개의 배치를 기억하세요.</p></div></details>
+    <details><summary>힌트 2</summary><div><p>옆 벽판의 별자리 카드 여섯 장 중 그 배치와 <b>같은</b> 카드를 찾으세요. 좌우로 뒤집힌 카드가 하나 섞여 있습니다. 카드 속 별의 번호 1 → 6 순서대로 자물쇠에 선을 그으면 됩니다.</p></div></details>
+    <details class="ans"><summary>정답</summary><div><p><b>ㄷ 카드</b>의 순서대로 (거꾸로 그려도 됩니다)</p>
+      <svg class="star" id="star" viewBox="0 0 220 220" role="img" aria-label="4×4 점 위에 그린 정답 선: 2열1행에서 시작해 1열2행이 1번"></svg>
+      <p>그런데 맞혀도 <b>문은 열리지 않습니다.</b> 고장이 아니라 원래 그렇습니다. 다음 단계로 가세요.</p></div></details>
+  </div>
+
+  <h2 id="box">경보등과 상자</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 문이 안 열린 뒤 무엇을 해야 할지 모를 때</p>
+    <details><summary>힌트 1</summary><div><p>문을 당길 때마다 어디선가 붉은 빛이 번쩍입니다. 뒤를 돌아보세요.</p></div></details>
+    <details><summary>힌트 2</summary><div><p>3층 발코니에서 출구 문의 <b>정반대편(180°)</b>으로 가세요. 경보등 바로 아래 어둠 속에 상자가 있습니다. 경보가 울릴 때 가장 잘 보입니다.</p></div></details>
+    <details class="ans"><summary>정답</summary><div><p>상자 안: 놋쇠 추, 실, 쇠공 다섯 개, 초시계 (탑 시계와 같은 박자). 모두 꺼내세요.</p></div></details>
+  </div>
+
+  <h2 id="build">진자 만들기</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 추와 실을 얻었는데 쓸 곳을 모를 때</p>
+    <details><summary>힌트 1</summary><div><p>처음부터 돔 꼭대기 한가운데에 어두운 <b>고리(도르래)</b>가 있었습니다. 거기서 내려온 줄의 끝이 3층 난간에 걸려 있습니다.</p></div></details>
+    <details><summary>힌트 2</summary><div><p>상자 바로 옆 난간의 줄 끝 고리를 눌러 실과 추를 매다세요. 줄의 다른 끝은 3층 벽의 <b>윈치</b>로 이어집니다. 손잡이를 돌리세요.</p></div></details>
+    <details class="ans"><summary>정답</summary><div><p>고리(약 176°) → 윈치(약 158°) 순서로 누르면 추가 1층 바닥 바로 위까지 내려가 흔들리기 시작합니다. 그다음은 <b>1층으로 내려가서</b> 재는 일입니다.</p></div></details>
+  </div>
+
+  <h2 id="length">진자의 길이</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 1층 바닥(90° 근처)의 열린 칸, “이 진자의 길이는?”</p>
+    <details><summary>힌트 1</summary><div><p>추가 바닥 한가운데 금속판 위를 지날 때마다 삐 소리가 나고, 바닥 칸 하나가 열립니다. 줄은 윈치에 감겨 있어서 길이를 직접 잴 수 없습니다. 대신 <b>잴 수 있는 것</b>이 두 가지 있습니다.</p></div></details>
+    <details><summary>힌트 2</summary><div>
+      <p>① 쇠공을 골라 3층 난간을 누르면 떨어집니다. 난간 표지판에 높이가 적혀 있습니다. 떨어지는 시간 <i>t</i>를 초시계로 재면 <span class="mono">g = 2h / t²</span>.</p>
+      <p>② 삐 소리 두 번이 한 주기입니다. 주기 <i>T</i>를 재면 <span class="mono">L = gT² / 4π²</span>.</p>
+      <p>오차를 줄이려면 공을 여러 번 떨어뜨려 평균을 내고, 주기는 여러 번을 한꺼번에 재서 나누세요.</p></div></details>
+    <details class="ans"><summary>정답</summary><div>
+      <p class="big mono">29.6 m</p>
+      <p>28.2 ~ 31.0 m를 넣으면 열립니다 (±5%). 모든 시간은 <b>탑 시계·초시계 기준</b>입니다.</p>
+      <div class="calc">h = 13.0 m,  t ≈ 20.4 s<br>g = 2·13.0 / 20.4² ≈ 0.0625 m/s²<br>T ≈ 136.7 s  (삐 소리 두 번 사이)<br>L = 0.0625 · 136.7² / 4π² ≈ 29.6 m</div>
+      <p>g가 지구 값과 전혀 다르게 나와도 맞습니다. 여기는 지구가 아니고, 같은 시계로 잰 g와 T로 계산하면 길이는 정확히 나옵니다.</p>
+      <p>맞히면 칸 안에 쪽지가 나옵니다: “침대 서랍을 열어 보라.”</p></div></details>
+  </div>
+
+  <h2 id="lat">위도 — 마지막</h2>
+  <div class="stage">
+    <p class="where">막힌 곳: 침대 서랍의 0° ~ 90° 다이얼 (±4° 이내면 열림)</p>
+    <details><summary>힌트 1</summary><div><p>두 가지가 필요합니다. <b>이 행성의 하루 길이</b>, 그리고 <b>진자가 흔들리는 방향(진동면)이 얼마나 빨리 도는지</b>.</p></div></details>
+    <details><summary>힌트 2</summary><div>
+      <p>하루 길이: 1층 벽의 일과표와 시계 숫자판(0~11)을 보세요.</p>
+      <p>회전 속도: 바닥 원판 가장자리의 각도 눈금으로 추가 어느 눈금에서 되돌아가는지 기록하고, 시간이 지난 뒤 다시 봅니다. 핀이 하나씩 쓰러지는 것도 단서입니다. <b>오래 잴수록 정확합니다.</b></p>
+      <div class="calc">sin(위도) = (진동면 회전 속도 °/시간 × 하루 길이 시간) ÷ 360°</div></div></details>
+    <details class="ans"><summary>정답</summary><div>
+      <p class="big mono">30°</p>
+      <p>26° ~ 34°면 열립니다. 남반구·북반구는 따지지 않습니다.</p>
+      <div class="calc">하루 = 12시간 (탑 시계)<br>진동면: 탑 시계 1시간에 15° 회전<br>&nbsp;&nbsp;(실제 시간으로 5분에 10°, 20분에 40°)<br>sin φ = 15 × 12 / 360 = 0.5  →  φ = 30°</div>
+      <p>틀리면 다이얼이 잠깐 잠깁니다 (15초, 30초, 60초… 점점 길어짐).</p></div></details>
+  </div>
+
+  <section class="teacher" id="teacher">
+    <h2>채점·확인용 요약</h2>
+    <p>정답 한눈에 보기</p>
+    <table class="stack"><thead><tr><th>단계</th><th>자물쇠</th><th>정답</th></tr></thead><tbody>
+      <tr><td data-l="단계">1층 핀</td><td data-l="자물쇠">2층 철창 (글자 5칸)</td><td data-l="정답">STILL</td></tr>
+      <tr><td data-l="단계">2층 내려다보기</td><td data-l="자물쇠">3층 철창 (숫자 4칸)</td><td data-l="정답">4726</td></tr>
+      <tr><td data-l="단계">3층 별자리</td><td data-l="자물쇠">출구 문 빛점 자물쇠</td><td data-l="정답">ㄷ 카드 순서 (문은 열리지 않음)</td></tr>
+      <tr><td data-l="단계">진자 길이</td><td data-l="자물쇠">1층 바닥 칸</td><td data-l="정답">29.6 m (±5%)</td></tr>
+      <tr><td data-l="단계">위도</td><td data-l="자물쇠">침대 서랍 다이얼</td><td data-l="정답">30° (±4°)</td></tr>
+    </tbody></table>
+
+    <h3 style="margin-top:22px">설계 의도</h3>
+    <p>플레이어는 위에 빛나는 출구로 올라가 ‘밖을 내려다보려’ 하지만 문은 끝내 열리지 않습니다. 결국 처음 깨어난 1층 바닥으로 돌아와 진자를 직접 재서 위도를 알아내야 탑이 열립니다. 바깥으로 나가지 않고 안에서의 측정만으로 행성의 자전을 알 수 있다는 것을 말 대신 경험으로 남기려는 구성입니다. 엔딩에서 열린 돔 너머의 별은 방금 잰 속도와 방향 그대로 돕니다.</p>
+
+    <h3 style="margin-top:22px">수치와 물리 검증</h3>
+    <table class="stack"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody>
+      <tr><td data-l="항목">행성 하루 (탑 시계)</td><td data-l="값" class="n">12 시간</td></tr>
+      <tr><td data-l="항목">탑 시계 속도</td><td data-l="값" class="n">실제의 8배</td></tr>
+      <tr><td data-l="항목">진동면 회전</td><td data-l="값" class="n">15°/시간 = 30° × sin 30°</td></tr>
+      <tr><td data-l="항목">진자 길이</td><td data-l="값" class="n">29.6 m</td></tr>
+      <tr><td data-l="항목">낙하 높이 (3층 난간)</td><td data-l="값" class="n">13.0 m</td></tr>
+      <tr><td data-l="항목">탑 시계로 잰 g</td><td data-l="값" class="n">0.0625 m/s²</td></tr>
+      <tr><td data-l="항목">탑 시계로 잰 주기</td><td data-l="값" class="n">136.7 s</td></tr>
+    </tbody></table>
+    <p>진자는 애니메이션이 아니라 회전좌표계 운동방정식(코리올리 항 포함)을 RK4로 1/120초 간격으로 적분해 움직입니다. 실제 시간 10분 뒤 진동면 회전은 20.0°로 이론값과 0.13° 이내, 20분 뒤는 40.0°로 0.27° 이내였습니다.</p>
+  </section>
+  <footer>창문 없는 탑 · 푸코 진자 교육용 방탈출</footer>
+</main>
+<script>
+{
+  const D=Math.PI/180, C=200, K=170/12;
+  const at=(b,r)=>[C+r*K*Math.sin(b*D), C-r*K*Math.cos(b*D)];
+  const items=[
+    {n:1,b:0,r:11.5,t:'출구 문 · 빛점 자물쇠',f:'3층'},
+    {n:2,b:40,r:10.9,t:'계단 (20°~60°, 철창 두 개)',f:'1→3층'},
+    {n:3,b:90,r:5.75,t:'바닥 칸 (덮개)',f:'1층'},
+    {n:4,b:135,r:11.4,t:'탑 시계 (315°에도 하나)',f:'2~3층 사이 벽'},
+    {n:5,b:158,r:11.4,t:'윈치',f:'3층'},
+    {n:6,b:176,r:8.6,t:'줄 끝 고리',f:'3층 난간'},
+    {n:7,b:181,r:11.2,t:'경보등 · 상자',f:'3층'},
+    {n:8,b:188,r:6.6,t:'침대 · 서랍 다이얼',f:'1층'},
+    {n:9,b:205,r:5.6,t:'핀이 담긴 통',f:'1층'},
+    {n:10,b:212,r:11.4,t:'일과표',f:'1층 벽'},
+    {n:11,b:270,r:11.4,t:'창문처럼 생긴 액자',f:'3층'},
+    {n:12,b:304,r:11.4,t:'별자리 카드',f:'3층'},
+    {n:13,b:0,r:0,t:'각도 눈금 원판 · 센서 · 핀 홈',f:'1층 바닥'}
+  ];
+  let s=`<circle cx="${C}" cy="${C}" r="170" fill="#0e141b" stroke="#4a6472" stroke-width="2"/>`;
+  s+=`<circle cx="${C}" cy="${C}" r="${8.5*K}" fill="none" stroke="#3f8fa6" stroke-dasharray="4 5"/>`;
+  s+=`<circle cx="${C}" cy="${C}" r="${5.2*K}" fill="#1a2430" stroke="#3f8fa6"/>`;
+  const [a0,b0]=at(20,11.2),[a1,b1]=at(60,11.2);
+  s+=`<path d="M${a0} ${b0} A${11.2*K} ${11.2*K} 0 0 1 ${a1} ${b1}" fill="none" stroke="#9ad6e6" stroke-width="16" stroke-opacity=".25"/>`;
+  for(const [d,l] of [[0,'0°'],[90,'90°'],[180,'180°'],[270,'270°']]){const [x,y]=at(d,13.1); s+=`<text x="${x}" y="${y+5}" fill="#9aa8b4" font-size="13" text-anchor="middle">${l}</text>`;}
+  for(const it of items){const [x,y]=at(it.b,it.r); s+=`<circle cx="${x}" cy="${y}" r="10" fill="#9ad6e6"/><text x="${x}" y="${y+4}" fill="#0a0d11" font-size="11" font-weight="700" text-anchor="middle">${it.n}</text>`;}
+  document.getElementById('plan').innerHTML=s;
+  document.getElementById('legend').innerHTML=items.map(it=>`<li><b>${it.n}</b><span>${it.t} <small>· ${it.f}</small></span></li>`).join('');
+  // 별 자물쇠 정답
+  const path=[[0,1],[1,0],[2,1],[2,2],[3,3],[1,2]], P=(i,j)=>[30+i*53.3,30+j*53.3];
+  let t='<rect width="220" height="220" rx="12" fill="#0c141d"/>';
+  for(let j=0;j<4;j++)for(let i=0;i<4;i++){const [x,y]=P(i,j); t+=`<circle cx="${x}" cy="${y}" r="5" fill="#35505e"/>`;}
+  t+=`<polyline points="${path.map(p=>P(...p).join(',')).join(' ')}" fill="none" stroke="#9ad6e6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const off=[[-18,-6],[-4,-14],[12,5],[12,0],[11,17],[-17,-8]];
+  path.forEach((p,k)=>{const [x,y]=P(...p); t+=`<circle cx="${x}" cy="${y}" r="8" fill="#eafaff"/><text x="${x+off[k][0]}" y="${y+off[k][1]}" fill="#ffd58a" font-size="14" font-weight="700">${k+1}</text>`;});
+  document.getElementById('star').innerHTML=t;
+}
+</script>
+</body>
+</html>
