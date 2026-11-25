@@ -80,7 +80,7 @@ input[type=range]{width:min(300px,80vw);accent-color:var(--brass);padding:0}
 #start .keys{margin-top:22px;font-size:13px;color:var(--dim);line-height:1.9}
 kbd{font:12px ui-monospace,Consolas,monospace;border:1px solid var(--brass2);border-radius:4px;padding:1px 6px;color:var(--ink)}
 #final{display:none;background:rgba(3,4,8,.86)}
-#final .q{font:500 clamp(20px,3.4vw,26px)/1.6 "Noto Serif KR",serif;color:var(--ink);margin:18px 0}
+#final .q{font:500 clamp(44px,9vw,72px)/1.1 "Noto Serif KR",serif;color:var(--ink);letter-spacing:.04em;margin:0 0 22px}
 #final dl{display:grid;grid-template-columns:auto auto;gap:4px 16px;justify-content:center;color:var(--dim);margin:16px 0}
 #final dd{margin:0;color:var(--brass);font-variant-numeric:tabular-nums;text-align:right}
 #quote{position:fixed;left:50%;top:22%;transform:translateX(-50%);width:min(760px,90vw);text-align:center;font:500 clamp(20px,3.2vw,30px)/1.6 "Noto Serif KR",serif;color:#f6efdc;text-shadow:0 2px 18px #000;opacity:0;transition:opacity 3s;pointer-events:none;z-index:6}
@@ -140,8 +140,7 @@ kbd{font:12px ui-monospace,Consolas,monospace;border:1px solid var(--brass2);bor
   <div class="keys"><kbd>W A S D</kbd> 걷기 · 드래그 둘러보기 · 클릭 조사 · <kbd>H</kbd> 도움말</div>
 </div></div>
 <div id="final"><div class="in">
-  <h1>창문 없는 탑</h1>
-  <div class="q">나가야 알 수 있는 게 아니라,<br>알아야 나갈 수 있었다.</div>
+  <div class="q">The End</div>
   <dl id="stats"></dl>
   <button class="pri" id="bAgain">처음부터</button>
 </div></div>
@@ -540,9 +539,9 @@ function buildStairCore(){
   add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cap),40,0.06,6),capM));
   const glow=[]; for(let b=C.SB0;b<=C.SB1+0.01;b+=2) glow.push(P(b,C.SRI-0.02,TOP-0.12));
   add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(glow),40,0.015,4),basic({color:0x3f8fa6})));
-  // 20° 끝: 각 계단 꼭대기 아래 빈 공간을 막는다 (60° 끝은 입구라 열어 둔다)
+  // 20° 끝: 1층 계단 꼭대기 아래(1층 높이)만 막는다. 2층 높이는 1층→2층 계단의 출구라 열어 둔다
   const endM=std({map:tex,side:THREE.DoubleSide,metalness:0.2,roughness:0.65});
-  for(const [y0,y1] of [[0,C.H2-0.3],[C.H2,C.H3-0.3]]){
+  for(const [y0,y1] of [[0,C.H2-0.3]]){
     const g=new THREE.PlaneGeometry(C.RW-C.SRI,y1-y0); const e=add(new THREE.Mesh(g,endM));
     e.position.copy(P(C.SB0,(C.RW+C.SRI)/2,(y0+y1)/2)); e.rotation.y=(90-C.SB0)*D2R; blockers.push(e);}
 }
@@ -1079,7 +1078,8 @@ function frame(now){
     if(S.ending){ const E=S.ending; E.t+=dt; const o=clamp((E.t-1)/13,0,1), th=(1-Math.cos(o*Math.PI))/2*1.85;
       W.pivS.rotation.x=th; W.pivN.rotation.x=-th;
       W.starPts.forEach(pt=>pt.material.opacity=clamp((E.t-2)/6,0,1));
-      if(E.t>9&&!E.q){E.q=true; const q=$('#quote'); q.innerHTML='나가야 알 수 있는 게 아니라,<br>알아야 나갈 수 있었다.'; q.classList.add('on'); setTimeout(()=>q.classList.remove('on'),9000);}
+      // 타임랩스: 돔이 열리면 시계·별·진자가 함께 최대 40배로 빨라진다 (실제 속도로는 별이 멈춘 것처럼 보이므로)
+      if(!E.dev){const k=clamp((E.t-5)/8,0,1); S.timeScale=1+39*k*k*(3-2*k);}
       if(E.t>12&&!S.doorOpen){S.doorOpen=true; SFX.clunk();}
       if(S.doorOpen) for(const lf of W.leaves){const tg=lf.s*1.6; lf.hinge.rotation.y+=(tg-lf.hinge.rotation.y)*Math.min(1,dt*0.7);}
     }
